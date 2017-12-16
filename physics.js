@@ -57,12 +57,9 @@ function checkCollistionEnemy(obj1, obj2) {
         delete enemies[score-1];
         enemiesLength += 1;
         enemies[enemiesLength] = new createEnemy();
-        console.log(enemies);
     } else if(enemies[score].x < 500 && Object.keys(enemies).length === 1) {
-        console.log(enemies);
         enemiesLength += 1;
         enemies[enemiesLength] = new createEnemy();
-        console.log(enemies);
     }
 }
 
