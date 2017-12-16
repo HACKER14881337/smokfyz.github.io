@@ -130,7 +130,7 @@ $(document).keydown(function(e){
 });
 
 
-$(document).bind('touchstart', function (e) {
+$(document).bind('click', function (e) {
    if(start === 0){
        e.preventDefault();
        start = 1;
@@ -142,6 +142,5 @@ $(document).bind('touchstart', function (e) {
        if(doubleJump === 0)ball.vY += -500;
        if(doubleJump === 1)ball.vY += -200;
        doubleJump += 1;
-       return;
    }
 });
