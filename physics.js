@@ -122,6 +122,7 @@ $(document).keydown(function(e){
     }
     if(e.which === 13 && start === 0){
         e.preventDefault();
+        start = 1;
         ball.vY += 1;
         last = performance.now();
         requestID = requestAnimationFrame(render);
@@ -132,6 +133,7 @@ $(document).keydown(function(e){
 $(document).bind('touchstart', function (e) {
    if(start === 0){
        e.preventDefault();
+       start = 1;
        ball.vY += 1;
        last = performance.now();
        requestID = requestAnimationFrame(render);
