@@ -127,3 +127,19 @@ $(document).keydown(function(e){
         requestID = requestAnimationFrame(render);
     }
 });
+
+
+$(document).bind('touchstart', function (e) {
+   if(start === 0){
+       e.preventDefault();
+       ball.vY += 1;
+       last = performance.now();
+       requestID = requestAnimationFrame(render);
+   } else {
+       e.preventDefault();
+       if(doubleJump === 0)ball.vY += -500;
+       if(doubleJump === 1)ball.vY += -200;
+       doubleJump += 1;
+       return;
+   }
+});
