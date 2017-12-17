@@ -12,11 +12,16 @@ var stop = 0;
 var last;
 var requestID;
 
-ball = new createPhysicalObj(ball);
-land = new createPhysicalObj(land);
-enemies['0'] = new createEnemy();
+var storage = localStorage;
+var maxScore = storage.getItem('score');
 
-function createPhysicalObj(jqueryEl) {
+if(!storage.getItem('score')) {
+    maxScore = 0;
+}
+
+land = new CreatePhysicalObj(land);
+
+function CreatePhysicalObj(jqueryEl) {
     this.x = jqueryEl.position().left;
     this.y = jqueryEl.position().top;
     this.vX = 0;
@@ -25,6 +30,12 @@ function createPhysicalObj(jqueryEl) {
     this.height = parseInt(jqueryEl.css("height"));
     this.id = jqueryEl.attr('id');
     this.jqueryAccess = jqueryEl;
+}
+
+function CreateAchieve(jqueryEl){
+    this.type = type;
+    this.jqueryAccess;
+    this.x;
 }
 
 function checkCollistionLand(obj1, obj2) {
@@ -48,18 +59,19 @@ function checkCollistionLand(obj1, obj2) {
 function checkCollistionEnemy(obj1, obj2) {
     if(obj1.x + obj1.width > obj2.x && obj1.x < obj2.x + obj2.width && obj1.y + obj1.height > obj2.y) {
         stop = 1;
-        $('.gameover').text('Game Over');
+        start = 0;
+        if(maxScore === score) storage.setItem('score', maxScore);
+        $('.gameover').text('Game Over. Press ENTER to restart');
         cancelAnimationFrame(requestID);
     } else if(obj2.x < -obj2.width) {
         score += 1;
-        $('.score').text('Score: ' + score);
+        if(maxScore < score) maxScore++;
+        $('.score').text('Score: ' + score + ' (Your max score: ' + maxScore + ')');
         speed += 10000;
         delete enemies[score-1];
+    } else if(land.width - enemies[enemiesLength].x > 700) {
         enemiesLength += 1;
-        enemies[enemiesLength] = new createEnemy();
-    } else if(enemies[score].x < 500 && Object.keys(enemies).length === 1) {
-        enemiesLength += 1;
-        enemies[enemiesLength] = new createEnemy();
+        enemies[enemiesLength] = new CreateEnemy();
     }
 }
 
@@ -73,18 +85,18 @@ function gravity(obj, dt) {
         obj.y = y;
         obj.jqueryAccess.css("top", obj.y);
     }
-    for(enemy in enemies) {
+    for(var enemy in enemies) {
         enemies[enemy].render(dt/1000);
         checkCollistionEnemy(obj, enemies[enemy]);
     }
 }
 
-function createEnemy() {
+function CreateEnemy() {
     this.jqueryAccess = $('<div>', {class: 'enemy', id: score});
     this.width = 50 + Math.random()*50;
     this.height = 50 + Math.random()*100;
     this.y = parseInt(land.jqueryAccess.css('top')) - this.height;
-    this.x = parseInt(land.jqueryAccess.css('width')) - this.width;
+    this.x = parseInt(land.jqueryAccess.css('width'));
     this.render = function(dt) {
         this.x -= speed*dt;
         this.jqueryAccess.css({'left': this.x});
@@ -109,6 +121,23 @@ function render() {
     requestID = requestAnimationFrame(render);
 }
 
+function restart() {
+    start = 1;
+    stop = 0;
+    score = 0;
+    enemiesLength = 0;
+    speed = 150000;
+    $('.score').text('Score: 0 ' + '(Your max score: ' + maxScore + ')');
+    $('.gameover').text('');
+    for(var enemy in enemies){
+        enemies[enemy].jqueryAccess.remove();
+        delete enemies[enemy];
+    }
+    $('#ball').css({'top': '70%'});
+    ball = new CreatePhysicalObj($('#ball'));
+    enemies['0'] = new CreateEnemy();
+}
+
 $(document).keydown(function(e){
     if(e.which === 32){
         e.preventDefault();
@@ -120,6 +149,11 @@ $(document).keydown(function(e){
     if(e.which === 13 && start === 0){
         e.preventDefault();
         start = 1;
+        stop = 0;
+        score = 0;
+        enemiesLength = 0;
+        speed = 150000;
+        restart();
         ball.vY += 1;
         last = performance.now();
         requestID = requestAnimationFrame(render);
@@ -130,7 +164,7 @@ $(document).keydown(function(e){
 $(document).bind('click', function (e) {
    if(start === 0){
        e.preventDefault();
-       start = 1;
+       restart();
        ball.vY += 1;
        last = performance.now();
        requestID = requestAnimationFrame(render);
