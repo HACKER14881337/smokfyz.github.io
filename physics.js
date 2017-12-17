@@ -32,10 +32,30 @@ function CreatePhysicalObj(jqueryEl) {
     this.jqueryAccess = jqueryEl;
 }
 
-function CreateAchieve(jqueryEl){
+function CreateEnemy() {
+    this.jqueryAccess = $('<div>', {class: 'enemy', id: score});
+    this.width = 50 + Math.random()*50;
+    this.height = 50 + Math.random()*100;
+    this.y = parseInt(land.jqueryAccess.css('top')) - this.height;
+    this.x = parseInt(land.jqueryAccess.css('width'));
+    this.render = function(dt) {
+        this.x -= speed*dt;
+        this.jqueryAccess.css({'left': this.x});
+    };
+
+    this.jqueryAccess.css({
+        'width': this.width + 'px',
+        'height': this.height + 'px',
+        'top': this.y + 'px',
+        'left': this.x + 'px'
+    });
+
+    this.jqueryAccess.appendTo('body');
+}
+
+function CreateAchieve(type){
     this.type = type;
-    this.jqueryAccess;
-    this.x;
+    this.jqueryAccess = $('<div>', {class: 'achieve'});
 }
 
 function checkCollistionLand(obj1, obj2) {
@@ -87,29 +107,8 @@ function gravity(obj, dt) {
     }
     for(var enemy in enemies) {
         enemies[enemy].render(dt/1000);
-        checkCollistionEnemy(obj, enemies[enemy]);
     }
-}
-
-function CreateEnemy() {
-    this.jqueryAccess = $('<div>', {class: 'enemy', id: score});
-    this.width = 50 + Math.random()*50;
-    this.height = 50 + Math.random()*100;
-    this.y = parseInt(land.jqueryAccess.css('top')) - this.height;
-    this.x = parseInt(land.jqueryAccess.css('width'));
-    this.render = function(dt) {
-        this.x -= speed*dt;
-        this.jqueryAccess.css({'left': this.x});
-    };
-
-    this.jqueryAccess.css({
-        'width': this.width + 'px',
-        'height': this.height + 'px',
-        'top': this.y + 'px',
-        'left': this.x + 'px'
-    });
-
-    this.jqueryAccess.appendTo('body');
+    if(obj.x + obj.height > enemies[score].x) checkCollistionEnemy(obj, enemies[score]);
 }
 
 function render() {
