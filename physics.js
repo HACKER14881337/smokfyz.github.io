@@ -43,7 +43,7 @@ var isMobile = {
 };
 
 if(isMobile.any()) {
-    $('body').css({'font-size': '32px'});
+    $('body').css({'font-size': '400%'});
 }
 
 function CreatePhysicalObj(jqueryEl) {
